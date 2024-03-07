@@ -3,7 +3,11 @@ package bank;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class BankAccountTest {
     BankAccount bankAccount;
@@ -28,8 +32,16 @@ class BankAccountTest {
     void moneyNotWithdrew() {
         int amount = bankAccount.getBalance() * 2;
         boolean obtainedValue = !bankAccount.withdraw(amount);
-        boolean expectedValue = false;
-        assertEquals(expectedValue, obtainedValue);
+        assertFalse(obtainedValue);
+    }
+
+    @Test
+    @DisplayName("Al depositar dinero negativo debe devolver un error")
+    void negativeMoneyError() {
+        int amount = -1;
+        assertThrows(IllegalArgumentException.class, () -> {
+            bankAccount.deposit(amount);
+        });
     }
 
     @Test
@@ -55,25 +67,11 @@ class BankAccountTest {
         assertEquals(expectedValue, obtainedValue);
     }
 
-    @Test
+    @ParameterizedTest
+    @CsvSource({"1, 1, 1, 0, 1", "10000, 0.001, 12, 2, 8341.651388934994"})
     @DisplayName("Se calcula de forma exitosa la deuda mensual si son 0 meses")
-    void zeroMonthsLoan() {
-        double amount = 1, interest = 1;
-        int npayments = 1, months = 0;
+    void zeroMonthsLoan(double amount, double interest, int npayments, int months, double expectedValue) {
         double obtainedValue = bankAccount.pending(amount, interest, npayments, months);
-        double expectedValue = amount;
-
-        assertEquals(expectedValue, obtainedValue);
-    }
-
-    @Test
-    @DisplayName("Se calcula de forma exitosa la deuda mensual si son mas de 0 meses")
-    void moreThan0MonthsLoan() {
-        double amount = 10000, interest = 0.001;
-        int npayments = 12, months = 2;
-        double obtainedValue = bankAccount.pending(amount, interest, npayments, months);
-        double expectedValue = 8341.651388934994;
-
         assertEquals(expectedValue, obtainedValue);
     }
 }
