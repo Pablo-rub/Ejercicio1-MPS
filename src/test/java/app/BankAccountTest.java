@@ -30,8 +30,8 @@ class BankAccountTest {
     @Test
     @DisplayName("Si la cantidad a sacar es mayor que la disponible, no se realiza la operación")
     void moneyNotWithdrew() {
-        int amount = bankAccount.getBalance() * 2;
-        boolean obtainedValue = !bankAccount.withdraw(amount);
+        int amount = bankAccount.getBalance() + 1;
+        boolean obtainedValue = bankAccount.withdraw(amount);
         assertFalse(obtainedValue);
     }
 
